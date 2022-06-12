@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, redirect, url_for
 from mpd import MPDClient
 import threading
@@ -5,14 +7,18 @@ import threading
 app = Flask(__name__)
 
 app.secret_key = 'piwo'
-
+music = '/var/lib/mpd/music/'
 stopped = True
 client = MPDClient()
 client_lock = threading.Lock()
+
 with client_lock:
    client.connect("localhost", 6600)
    client.update()
 
+for file in os.listdir(music):
+    print(music + file)
+    client.add(file)
 def reconnect():
     try:
         client.ping()
